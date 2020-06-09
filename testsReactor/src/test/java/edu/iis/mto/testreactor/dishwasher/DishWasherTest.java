@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,6 +111,24 @@ public class DishWasherTest {
         RunResult runResult = dishWasher.start(programConfiguration);
 
         Status statusRelevant = Status.ERROR_FILTER;
+        RunResult expectedRunResult = buildErrorStatus(statusRelevant);
+
+        assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+    }
+
+    @Test
+    public void engineExceptionShouldResultInFailure() throws EngineException {
+        boolean tabletsUsedRelevant = false;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
+
+        when(door.closed()).thenReturn(true);
+        doThrow(new EngineException()).when(engine).runProgram(any(WashingProgram.class));
+
+        RunResult runResult = dishWasher.start(programConfiguration);
+
+        Status statusRelevant = Status.ERROR_PROGRAM;
         RunResult expectedRunResult = buildErrorStatus(statusRelevant);
 
         assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
