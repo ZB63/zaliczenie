@@ -97,6 +97,26 @@ public class DishWasherTest {
         assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
     }
 
+    @Test
+    public void smallFilterCapacityShouldResultInFilterError() {
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedRelevant = true;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
+
+        when(dirtFilter.capacity()).thenReturn(12.0d);
+        when(door.closed()).thenReturn(true);
+
+        RunResult runResult = dishWasher.start(programConfiguration);
+
+        Status statusRelevant = Status.ERROR_FILTER;
+        RunResult expectedRunResult = buildErrorStatus(statusRelevant);
+
+        assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+    }
+
     private RunResult buildStatus(int timeRelevantForProgram, Status statusRelevant) {
         return RunResult.builder()
                         .withStatus(statusRelevant)
