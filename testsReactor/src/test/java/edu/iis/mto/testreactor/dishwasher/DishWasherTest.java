@@ -134,6 +134,24 @@ public class DishWasherTest {
         assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
     }
 
+    @Test
+    public void pumpExceptionShouldResultInFailure() throws PumpException {
+        boolean tabletsUsedRelevant = false;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
+
+        when(door.closed()).thenReturn(true);
+        doThrow(new PumpException()).when(waterPump).drain();
+
+        RunResult runResult = dishWasher.start(programConfiguration);
+
+        Status statusRelevant = Status.ERROR_PUMP;
+        RunResult expectedRunResult = buildErrorStatus(statusRelevant);
+
+        assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+    }
+
     // BEHAVIOUR TESTS -----------------------------
 
     @Test
