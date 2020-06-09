@@ -78,11 +78,36 @@ public class DishWasherTest {
         assertTrue(runResult.getRunMinutes() == expectedRunResult.getRunMinutes());
     }
 
+    @Test
+    public void unlockedDoorsShouldResultInDoorOpenError() {
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedNotRelevant = false;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedNotRelevant);
+
+        when(door.closed()).thenReturn(false);
+
+        RunResult runResult = dishWasher.start(programConfiguration);
+
+        Status statusRelevant = Status.DOOR_OPEN;
+        RunResult expectedRunResult = buildErrorStatus(statusRelevant);
+
+        assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+    }
+
     private RunResult buildStatus(int timeRelevantForProgram, Status statusRelevant) {
         return RunResult.builder()
                         .withStatus(statusRelevant)
                         .withRunMinutes(timeRelevantForProgram)
                         .build();
+    }
+
+    private RunResult buildErrorStatus(Status statusRelevant) {
+        return RunResult.builder()
+                .withStatus(statusRelevant)
+                .build();
     }
 
     private ProgramConfiguration buildProgramConfiguration(WashingProgram washingProgramNotRelevant, FillLevel fillLevelNotRelevant, boolean tabletsUsedRelevant) {
