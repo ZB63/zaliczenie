@@ -35,23 +35,38 @@ public class DishWasherTest {
 
     @Test
     public void properProgramWithoutTabletsShouldResultInSuccess() {
-        programConfiguration = ProgramConfiguration.builder()
-                                                .withProgram(WashingProgram.ECO)
-                                                .withFillLevel(FillLevel.HALF)
-                                                .withTabletsUsed(false)
-                                                .build();
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedRelevant = false;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
 
         when(door.closed()).thenReturn(true);
 
         RunResult runResult = dishWasher.start(programConfiguration);
 
-        RunResult expectedRunResult = RunResult.builder()
-                                                .withStatus(Status.SUCCESS)
-                                                .withRunMinutes(90)
-                                                .build();
+        int timeRelevantForProgram = 90;
+        Status statusRelevant = Status.SUCCESS;
+        RunResult expectedRunResult = buildStatus(timeRelevantForProgram, statusRelevant);
 
         assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
         assertTrue(runResult.getRunMinutes() == expectedRunResult.getRunMinutes());
+    }
+
+    private RunResult buildStatus(int timeRelevantForProgram, Status statusRelevant) {
+        return RunResult.builder()
+                        .withStatus(statusRelevant)
+                        .withRunMinutes(timeRelevantForProgram)
+                        .build();
+    }
+
+    private ProgramConfiguration buildProgramConfiguration(WashingProgram washingProgramNotRelevant, FillLevel fillLevelNotRelevant, boolean tabletsUsedRelevant) {
+        return ProgramConfiguration.builder()
+                                    .withProgram(washingProgramNotRelevant)
+                                    .withFillLevel(fillLevelNotRelevant)
+                                    .withTabletsUsed(tabletsUsedRelevant)
+                                    .build();
     }
 
 }
