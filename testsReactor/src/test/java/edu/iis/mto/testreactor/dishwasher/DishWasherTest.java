@@ -3,8 +3,7 @@ package edu.iis.mto.testreactor.dishwasher;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import edu.iis.mto.testreactor.dishwasher.engine.Engine;
 import edu.iis.mto.testreactor.dishwasher.engine.EngineException;
@@ -145,6 +144,24 @@ public class DishWasherTest {
         inOrder.verify(engine).runProgram(any(WashingProgram.class));
         inOrder.verify(waterPump).drain();
         inOrder.verify(door).unlock();
+    }
+
+    @Test
+    public void withDoorsUnlockedWaterPumpAndEngineCantWork() throws PumpException, EngineException {
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedNotRelevant = false;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedNotRelevant);
+
+        when(door.closed()).thenReturn(false);
+
+        dishWasher.start(programConfiguration);
+
+        verify(waterPump, times(0)).pour(any(FillLevel.class));
+        verify(engine, times(0)).runProgram(any(WashingProgram.class));
+        verify(waterPump, times(0)).drain();
     }
 
     private RunResult buildStatus(int timeRelevantForProgram, Status statusRelevant) {
