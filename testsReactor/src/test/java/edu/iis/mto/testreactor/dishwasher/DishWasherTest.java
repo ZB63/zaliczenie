@@ -32,6 +32,8 @@ public class DishWasherTest {
     public void setup() {
         dishWasher = new DishWasher(waterPump, engine, dirtFilter, door);
     }
+    
+    // STATE TESTS -------------------------
 
     @Test
     public void properProgramWithoutTabletsShouldResultInSuccess() {
@@ -43,6 +45,28 @@ public class DishWasherTest {
                 fillLevelNotRelevant, tabletsUsedRelevant);
 
         when(door.closed()).thenReturn(true);
+
+        RunResult runResult = dishWasher.start(programConfiguration);
+
+        int timeRelevantForProgram = 90;
+        Status statusRelevant = Status.SUCCESS;
+        RunResult expectedRunResult = buildStatus(timeRelevantForProgram, statusRelevant);
+
+        assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+        assertTrue(runResult.getRunMinutes() == expectedRunResult.getRunMinutes());
+    }
+
+    @Test
+    public void properProgramWithTabletsShouldResultInSuccess() {
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedRelevant = true;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
+
+        when(door.closed()).thenReturn(true);
+        when(dirtFilter.capacity()).thenReturn(100.0d);
 
         RunResult runResult = dishWasher.start(programConfiguration);
 
