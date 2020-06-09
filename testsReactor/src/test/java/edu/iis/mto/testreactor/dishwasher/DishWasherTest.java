@@ -22,6 +22,8 @@ public class DishWasherTest {
 
     DishWasher dishWasher;
     ProgramConfiguration programConfiguration;
+    WashingProgram washingProgramNotRelevant;
+    FillLevel fillLevelNotRelevant;
 
     @Mock
     WaterPump waterPump;
@@ -35,14 +37,14 @@ public class DishWasherTest {
     @BeforeEach
     public void setup() {
         dishWasher = new DishWasher(waterPump, engine, dirtFilter, door);
+        washingProgramNotRelevant = WashingProgram.ECO;
+        fillLevelNotRelevant = FillLevel.HALF;
     }
     
     // STATE TESTS -------------------------
 
     @Test
     public void properProgramWithoutTabletsShouldResultInSuccess() {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedRelevant = false;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
@@ -62,8 +64,6 @@ public class DishWasherTest {
 
     @Test
     public void properProgramWithTabletsShouldResultInSuccess() {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedRelevant = true;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
@@ -84,8 +84,6 @@ public class DishWasherTest {
 
     @Test
     public void unlockedDoorsShouldResultInDoorOpenError() {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedNotRelevant = false;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
@@ -103,8 +101,6 @@ public class DishWasherTest {
 
     @Test
     public void smallFilterCapacityShouldResultInFilterError() {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedRelevant = true;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
@@ -125,8 +121,6 @@ public class DishWasherTest {
 
     @Test
     public void properProgramShouldResultInRightOrderOfMethods() throws PumpException, EngineException {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedRelevant = true;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
@@ -148,8 +142,6 @@ public class DishWasherTest {
 
     @Test
     public void withDoorsUnlockedWaterPumpAndEngineCantWork() throws PumpException, EngineException {
-        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
-        FillLevel fillLevelNotRelevant = FillLevel.HALF;
         boolean tabletsUsedNotRelevant = false;
 
         programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
