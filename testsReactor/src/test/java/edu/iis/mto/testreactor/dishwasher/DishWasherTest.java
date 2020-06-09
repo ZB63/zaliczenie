@@ -2,15 +2,20 @@ package edu.iis.mto.testreactor.dishwasher;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 import edu.iis.mto.testreactor.dishwasher.engine.Engine;
+import edu.iis.mto.testreactor.dishwasher.engine.EngineException;
+import edu.iis.mto.testreactor.dishwasher.pump.PumpException;
 import edu.iis.mto.testreactor.dishwasher.pump.WaterPump;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,6 +120,31 @@ public class DishWasherTest {
         RunResult expectedRunResult = buildErrorStatus(statusRelevant);
 
         assertTrue(runResult.getStatus().equals(expectedRunResult.getStatus()));
+    }
+
+    // BEHAVIOUR TESTS -----------------------------
+
+    @Test
+    public void properProgramShouldResultInRightOrderOfMethods() throws PumpException, EngineException {
+        WashingProgram washingProgramNotRelevant = WashingProgram.ECO;
+        FillLevel fillLevelNotRelevant = FillLevel.HALF;
+        boolean tabletsUsedRelevant = true;
+
+        programConfiguration = buildProgramConfiguration(washingProgramNotRelevant,
+                fillLevelNotRelevant, tabletsUsedRelevant);
+
+        when(dirtFilter.capacity()).thenReturn(100.0d);
+        when(door.closed()).thenReturn(true);
+
+        dishWasher.start(programConfiguration);
+
+        InOrder inOrder = inOrder(door, waterPump, engine);
+
+        inOrder.verify(door).closed();
+        inOrder.verify(waterPump).pour(any(FillLevel.class));
+        inOrder.verify(engine).runProgram(any(WashingProgram.class));
+        inOrder.verify(waterPump).drain();
+        inOrder.verify(door).unlock();
     }
 
     private RunResult buildStatus(int timeRelevantForProgram, Status statusRelevant) {
